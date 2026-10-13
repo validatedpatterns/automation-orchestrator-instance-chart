@@ -1,0 +1,36 @@
+{{- $provider := include "ao.provider" . | trim }}
+{{- if not (or (eq $provider "cloudnative") (eq $provider "external")) }}
+{{- fail "postgres.provider must be cloudnative or external" }}
+{{- end }}
+{{- if and (eq $provider "external") (not .Values.postgres.host) }}
+{{- fail "postgres.host is required when postgres.provider is external" }}
+{{- end }}
+{{- $ca := include "ao.caSecret" . | trim }}
+---
+apiVersion: aap.ansible.com/v1alpha1
+kind: AutomationOrchestrator
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  postgres:
+    host: {{ include "ao.host" . | trim | quote }}
+    port: {{ .Values.postgres.port }}
+    sslMode: {{ include "ao.sslMode" . | trim }}
+    backendDatabase:
+      secretRef:
+        name: {{ include "ao.backendSecret" . | trim }}
+    temporalDatabase:
+      secretRef:
+        name: {{ include "ao.temporalSecret" . | trim }}
+    {{- if $ca }}
+    caCertSecretRef:
+      name: {{ $ca }}
+    {{- end }}
+  ingress:
+    type: {{ .Values.ingress.type }}
+    {{- with .Values.ingress.host }}
+    host: {{ . | quote }}
+    {{- end }}

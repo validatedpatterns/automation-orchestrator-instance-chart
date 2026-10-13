@@ -1,0 +1,29 @@
+# -- Namespace for the AutomationOrchestrator resource. The namespace itself is created outside this chart.
+namespace: automation-orchestrator
+
+# -- Name of the AutomationOrchestrator resource.
+name: orchestrator
+
+postgres:
+  # -- PostgreSQL provider. cloudnative connects to the CloudNativePG cluster from the vp-cloudnative-pg-cluster chart. external uses an existing PostgreSQL 15 instance.
+  provider: cloudnative
+  # -- CloudNativePG cluster name used to derive the service hostname and CA secret. Must match cluster.name in the vp-cloudnative-pg-cluster chart.
+  clusterName: orchestrator-postgres
+  # -- PostgreSQL hostname. Required when provider is external. Empty with cloudnative uses the CloudNativePG read-write service.
+  host: ""
+  # -- PostgreSQL port.
+  port: 5432
+  # -- PostgreSQL SSL mode. Empty selects verify-ca for cloudnative and require for external.
+  sslMode: ""
+  # -- Secret containing backend database keys database, username, and password. Empty selects the provider default.
+  backendDatabaseSecret: ""
+  # -- Secret containing Temporal database keys database, username, and password. Empty selects the provider default.
+  temporalDatabaseSecret: ""
+  # -- Secret containing the PostgreSQL CA certificate in key ca.crt. Empty with cloudnative uses the CloudNativePG cluster CA secret.
+  caCertSecret: ""
+
+ingress:
+  # -- Ingress type for automation orchestrator. Route is the OpenShift default.
+  type: Route
+  # -- Optional ingress hostname. Empty lets OpenShift assign the route host.
+  host: ""

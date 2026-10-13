@@ -1,0 +1,32 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+This chart installs an AutomationOrchestrator resource. It does not install the
+automation orchestrator operator, its namespace, or its subscription.
+
+PostgreSQL defaults to the CloudNativePG cluster created by the
+vp-cloudnative-pg-cluster chart in the same namespace. Deploy that chart first.
+The default connection uses
+`orchestrator-postgres-rw.automation-orchestrator.svc`, SSL mode `verify-ca`,
+and the cluster CA secret `orchestrator-postgres-ca`. Backend credentials come
+from `orchestrator-postgres-secret` and Temporal credentials from
+`temporal-postgres-secret`.
+
+Set `postgres.provider` to `external` to use an existing PostgreSQL 15 instance.
+Automation orchestrator does not use the Ansible Automation Platform database.
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

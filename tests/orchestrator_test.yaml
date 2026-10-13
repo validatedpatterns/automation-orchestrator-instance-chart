@@ -1,0 +1,100 @@
+suite: automation-orchestrator-instance
+templates:
+  - orchestrator.yaml
+tests:
+  - it: defaults to the cloudnative postgres service
+    set:
+      ingress.host: orchestrator.apps.example.com
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: AutomationOrchestrator
+      - equal:
+          path: metadata.name
+          value: orchestrator
+      - equal:
+          path: metadata.namespace
+          value: automation-orchestrator
+      - equal:
+          path: spec.postgres.host
+          value: orchestrator-postgres-rw.automation-orchestrator.svc
+      - equal:
+          path: spec.postgres.port
+          value: 5432
+      - equal:
+          path: spec.postgres.sslMode
+          value: verify-ca
+      - equal:
+          path: spec.postgres.caCertSecretRef.name
+          value: orchestrator-postgres-ca
+      - equal:
+          path: spec.postgres.backendDatabase.secretRef.name
+          value: orchestrator-postgres-secret
+      - equal:
+          path: spec.postgres.temporalDatabase.secretRef.name
+          value: temporal-postgres-secret
+      - equal:
+          path: spec.ingress.type
+          value: Route
+      - equal:
+          path: spec.ingress.host
+          value: orchestrator.apps.example.com
+  - it: omits the ingress host when it is empty
+    asserts:
+      - notExists:
+          path: spec.ingress.host
+  - it: uses an external postgres host when requested
+    set:
+      postgres.provider: external
+      postgres.host: pg.example.com
+    asserts:
+      - equal:
+          path: spec.postgres.host
+          value: pg.example.com
+      - equal:
+          path: spec.postgres.sslMode
+          value: require
+      - equal:
+          path: spec.postgres.backendDatabase.secretRef.name
+          value: orchestrator-pg-credentials
+      - equal:
+          path: spec.postgres.temporalDatabase.secretRef.name
+          value: temporal-pg-credentials
+      - notExists:
+          path: spec.postgres.caCertSecretRef
+  - it: honors explicit connection settings
+    set:
+      postgres.host: pg.example.com
+      postgres.sslMode: verify-full
+      postgres.backendDatabaseSecret: backend-secret
+      postgres.temporalDatabaseSecret: temporal-secret
+      postgres.caCertSecret: pg-ca
+    asserts:
+      - equal:
+          path: spec.postgres.host
+          value: pg.example.com
+      - equal:
+          path: spec.postgres.sslMode
+          value: verify-full
+      - equal:
+          path: spec.postgres.caCertSecretRef.name
+          value: pg-ca
+      - equal:
+          path: spec.postgres.backendDatabase.secretRef.name
+          value: backend-secret
+      - equal:
+          path: spec.postgres.temporalDatabase.secretRef.name
+          value: temporal-secret
+  - it: requires a postgres host for an external database
+    set:
+      postgres.provider: external
+    asserts:
+      - failedTemplate:
+          errorMessage: postgres.host is required when postgres.provider is external
+  - it: rejects an unknown postgres provider
+    set:
+      postgres.provider: builtin
+    asserts:
+      - failedTemplate:
+          errorMessage: postgres.provider must be cloudnative or external
