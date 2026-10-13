@@ -16,6 +16,24 @@ and the cluster CA secret `orchestrator-postgres-ca`. Backend credentials come
 from `orchestrator-postgres-secret` and Temporal credentials from
 `temporal-postgres-secret`.
 
+### Secrets
+
+Credential Secrets are projected with ExternalSecret resources using the same
+mechanism as
+[vp-cloudnative-pg-cluster](https://github.com/validatedpatterns/vp-cloudnative-pg-cluster-chart):
+`secretStore` + `secrets.*`, `dataFrom.extract`, and a
+`kubernetes.io/basic-auth` target template. Patterns supply or generate the
+Vault material through `values-secret` (`onMissingValue: generate`).
+
+| Provider | Who projects backend/temporal Secrets |
+| --- | --- |
+| `cloudnative` (default) | `vp-cloudnative-pg-cluster` (needed for Cluster bootstrap). This chart skips those names unless `secrets.includeDatabaseSecrets` is true. |
+| `external` | This chart, for the resolved backend/temporal Secret names |
+
+`secrets.additional` is always projected when `secrets.enabled` is true.
+ExternalSecrets use sync-wave `0`; the AutomationOrchestrator uses sync-wave
+`1`.
+
 Set `postgres.provider` to `external` to use an existing PostgreSQL 15 instance.
 Automation orchestrator does not use the Ansible Automation Platform database.
 
