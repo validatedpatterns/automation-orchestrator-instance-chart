@@ -37,6 +37,13 @@ ExternalSecrets use sync-wave `0`; the AutomationOrchestrator uses sync-wave
 Set `postgres.provider` to `external` to use an existing PostgreSQL 15 instance.
 Automation orchestrator does not use the Ansible Automation Platform database.
 
+### Console link
+
+The chart creates an OpenShift `ConsoleLink` in the Application menu (Red Hat
+applications), matching the ansible-automation-platform-instance chart. The
+href uses `ingress.host` when set; otherwise it uses
+`https://<name>-<namespace>.<global.hubClusterDomain>`.
+
 {{ template "chart.homepageLine" . }}
 
 {{ template "chart.maintainersSection" . }}
@@ -46,5 +53,14 @@ Automation orchestrator does not use the Ansible Automation Platform database.
 {{ template "chart.requirementsSection" . }}
 
 {{ template "chart.valuesSection" . }}
+
+## Notable changes
+
+### 0.1.0
+
+- Initial AutomationOrchestrator instance chart for Validated Patterns
+- ExternalSecret projection matching vp-cloudnative-pg-cluster (`secretStore` /
+  `secrets.*`)
+- OpenShift ConsoleLink in the Application menu (Red Hat applications)
 
 {{ template "helm-docs.versionFooter" . }}

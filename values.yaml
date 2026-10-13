@@ -4,8 +4,9 @@ namespace: automation-orchestrator
 # -- Name of the AutomationOrchestrator resource.
 name: orchestrator
 
-# -- Global pattern values. Patterns commonly inject hub/cluster metadata here.
-global: {}
+global:
+  # -- Domain used in the OpenShift console link for the orchestrator route.
+  hubClusterDomain: example.com
 
 secretStore:
   # -- External Secrets store used to project database credentials.

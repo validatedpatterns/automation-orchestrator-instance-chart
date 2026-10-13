@@ -1,0 +1,57 @@
+suite: console link
+templates:
+  - templates/console-link.yaml
+tests:
+  - it: creates an application menu console link with the default route host
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: ConsoleLink
+      - equal:
+          path: metadata.name
+          value: orchestrator
+      - equal:
+          path: metadata.namespace
+          value: automation-orchestrator
+      - equal:
+          path: spec.location
+          value: ApplicationMenu
+      - equal:
+          path: spec.applicationMenu.section
+          value: Red Hat applications
+      - equal:
+          path: spec.text
+          value: Automation Orchestrator
+      - equal:
+          path: spec.href
+          value: https://orchestrator-automation-orchestrator.example.com
+      - matchRegex:
+          path: spec.applicationMenu.imageURL
+          pattern: ^data:image/png;base64,
+
+  - it: uses an explicit ingress host when set
+    set:
+      ingress:
+        host: orchestrator.apps.example.com
+    asserts:
+      - equal:
+          path: spec.href
+          value: https://orchestrator.apps.example.com
+
+  - it: uses a custom name and namespace in the default route host
+    set:
+      name: my-ao
+      namespace: ao-ns
+      global:
+        hubClusterDomain: apps.cluster.example.com
+    asserts:
+      - equal:
+          path: metadata.name
+          value: my-ao
+      - equal:
+          path: metadata.namespace
+          value: ao-ns
+      - equal:
+          path: spec.href
+          value: https://my-ao-ao-ns.apps.cluster.example.com

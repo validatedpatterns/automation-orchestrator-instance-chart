@@ -52,3 +52,16 @@ require
 {{- printf "%s-ca" .Values.postgres.clusterName -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+OpenShift ConsoleLink href. Prefer an explicit ingress host; otherwise use the
+default Route pattern name-namespace.hubClusterDomain (same style as the AAP
+instance chart).
+*/}}
+{{- define "ao.consoleHref" -}}
+{{- if .Values.ingress.host -}}
+{{- printf "https://%s" .Values.ingress.host -}}
+{{- else -}}
+{{- printf "https://%s-%s.%s" .Values.name .Values.namespace .Values.global.hubClusterDomain -}}
+{{- end -}}
+{{- end -}}
