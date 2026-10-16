@@ -3,7 +3,6 @@ name: automation-orchestrator-instance
 description: A Helm chart to install an Automation Orchestrator instance
 type: application
 version: 0.1.0
-appVersion: "2.5"
 keywords:
   - pattern
 home: https://github.com/validatedpatterns/automation-orchestrator-instance-chart
